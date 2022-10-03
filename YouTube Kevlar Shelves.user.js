@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         YouTube Kevlar Shelves v0.3
+// @name         YouTube Kevlar Shelves TV Chips
 // @namespace    http://tampermonkey.net/
 // @updateURL    https://github.com/Prototaxis/yt_kevlar_shelves/raw/tv_chips/YouTube%20Kevlar%20Shelves.user.js
 // @downloadURL  https://github.com/Prototaxis/yt_kevlar_shelves/raw/tv_chips/YouTube%20Kevlar%20Shelves.user.js
