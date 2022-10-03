@@ -542,7 +542,7 @@
       )
         .replace(
           /(.*)(?:\u00FA\u009C\u00C7\u00BD\u0009|\u008a\u0082\u00FA\u00DA\u0009).{1,2}\u0008.*/,
-          "$1\u00DA\u00FA\u00CF\u0094\u000A\u0002\u0008\u0000"
+          "$1\u00FA\u009C\u00C7\u00BD\u0009\u0002\u0008\u0000"
         )
         .replace(
           /2[\n|.][\u0008\u001a]?[\s\S]*(Z[\s\S]\u000a[\s\S]\u000a\u0019yt_page_snapshot_regional\u0012[\s\S]*)/,
@@ -570,10 +570,16 @@
         72: btoa(
           this.basef($str)
             .replace(
+                /(.*)(?:\u00FA\u009C\u00C7\u00BD\u0009|\u008a\u0082\u00FA\u00DA\u0009).{1,2}\u0008.*/,
+                "$1\u00FA\u009C\u00C7\u00BD\u0009\u0002\u0008\u0000\u008a\u0082\u00FA\u00DA\u0009\u0002\u0008\u0000"
+            )
+            .replace(/page_snapshot_token/g, "filtered_page_token")
+            .replace(/\u000creload/g, "\u0013filtered_page")
+            .replace(
               /\u005a(.)\u000A(.)\u000A\u0019yt_page_snapshot_regional/,
               (a, b, c) =>
                 `\u005a${String.fromCharCode(
-                  b.charCodeAt(0) + ct + 5
+                  b.charCodeAt() + ct + 5
                 )}\u000A${String.fromCharCode(
                   c.charCodeAt() + ct + 5
                 )}\u000A\u0024yt_page_snapshot_livingroom_regional`
@@ -591,8 +597,8 @@
           .replace(/=/g, ""),
       });
     },
-    token: function ($str, $mode) {
-      let m = (typeof $mode == "number" ? "home" : "tv");
+    token: function ($str, $mode = 7) {
+      let m = typeof $mode == "number" ? "home" : "tv";
       return generatePb({
         80226972: {
           2: "FEwhat_to_watch",
@@ -686,43 +692,46 @@
 
   function cacheF(fn) {
     let cache = {};
-    return async function() {
-      if ('val' in cache) {
-        console.log('Fetching from cache');
-        return cache['val'];
-      }
-      else {
-        console.log('Calculating result');
+    return async function () {
+      if ("val" in cache) {
+        console.log("Fetching from cache");
+        return cache["val"];
+      } else {
+        console.log("Calculating result");
         let result = await fn();
-        cache['val'] = await result;
-        return await result;
+        cache["val"] = await result;
+        return result;
       }
-    }
+    };
   }
 
-  async function base_getct() {
-      let response = await requestYoutubei("hpMatrix");
-      /*let token = await response.contents.singleColumnBrowseResultsRenderer.tabs[0]
+  async function base_getToken() {
+    let response = await requestYoutubei("hpMatrix");
+    /*let token = await response.contents.singleColumnBrowseResultsRenderer.tabs[0]
       .tabRenderer.content.sectionListRenderer.continuations[1]
       .reloadContinuationData.continuation;
       let ct = modifyPb.token(await token); // ios shelves*/
-      let token = await response.contents.tvBrowseRenderer.content
-        .tvSecondaryNavRenderer.sections[0].tvSecondaryNavSectionRenderer
-        .tabs[0].tabRenderer.content.tvSurfaceContentRenderer.content
-        .sectionListRenderer.continuations[0].nextContinuationData.continuation;
-      return {
-        all: modifyPb.token(await token),
-        music: modifyPb.tv(await token, "music"),
-        movies: modifyPb.tv(await token, "movies"),
-        gaming: modifyPb.tv(await token, "gaming"),
-        news: modifyPb.tv(await token, "news"),
-        live: modifyPb.tv(await token, "live"),
-        sports: modifyPb.tv(await token, "sports"),
-      }
+    let token = await response.contents.tvBrowseRenderer.content
+      .tvSecondaryNavRenderer.sections[0].tvSecondaryNavSectionRenderer.tabs[0]
+      .tabRenderer.content.tvSurfaceContentRenderer.content.sectionListRenderer
+      .continuations[0].nextContinuationData.continuation;
+    return await token;
   }
 
-  const getct = cacheF(base_getct);
-  
+  let getToken = cacheF(base_getToken);
+
+  async function getct() {
+    return {
+      all: modifyPb.token(await getToken()),
+      music: modifyPb.token(await getToken(), "music"),
+      movies: modifyPb.token(await getToken(), "movies"),
+      gaming: modifyPb.token(await getToken(), "gaming"),
+      news: modifyPb.token(await getToken(), "news"),
+      live: modifyPb.token(await getToken(), "live"),
+      sports: modifyPb.token(await getToken(), "sports"),
+    };
+  }
+
   var skeleton = {
     contents: {
       twoColumnBrowseResultsRenderer: {
@@ -762,6 +771,7 @@
             {
               tabRenderer: {
                 selected: true,
+                title: "Home",
                 content: {
                   richGridRenderer: {
                     header: {
@@ -779,13 +789,13 @@
                                   },
                                 ],
                               },
-                              isSelected: true,
+                              isSelected: false,
                             },
                           },
                           {
                             chipCloudChipRenderer: {
                               style: {
-                                styleType: "STYLE_HOME_FILTER",
+                                styleType: "STYLE_DEFAULT",
                               },
                               text: {
                                 runs: [
@@ -797,12 +807,29 @@
                               navigationEndpoint: {
                                 commandMetadata: {
                                   webCommandMetadata: {
+                                    url: '',
                                     sendPost: true,
+                                    webPageType: "WEB_PAGE_TYPE_BROWSE",
                                     apiUrl: "/youtubei/v1/browse",
                                   },
                                 },
+                                /*navigationEndpoint: {
+                                  params: modifyPb.tv(
+                                    await getToken(),
+                                    "music"
+                                  ),
+                                  browseId: "FEwhat_to_watch",
+                                  //request: "CONTINUATION_REQUEST_TYPE_BROWSE",
+                                  command: {
+                                    showReloadUiCommand: {
+                                      targetId: "browse-feedFEwhat_to_watch",
+                                    },
+                                }},*/
                                 continuationCommand: {
-                                  token: await getct().music,
+                                  token: modifyPb.token(
+                                    await getToken(),
+                                    "music"
+                                  ),
                                   request: "CONTINUATION_REQUEST_TYPE_BROWSE",
                                   command: {
                                     showReloadUiCommand: {
@@ -834,7 +861,10 @@
                                   },
                                 },
                                 continuationCommand: {
-                                  token: await getct().movies,
+                                  token: modifyPb.token(
+                                    await getToken(),
+                                    "movies"
+                                  ),
                                   request: "CONTINUATION_REQUEST_TYPE_BROWSE",
                                   command: {
                                     showReloadUiCommand: {
@@ -865,7 +895,10 @@
                                   },
                                 },
                                 continuationCommand: {
-                                  token: await getct().gaming,
+                                  token: modifyPb.token(
+                                    await getToken(),
+                                    "gaming"
+                                  ),
                                   request: "CONTINUATION_REQUEST_TYPE_BROWSE",
                                   command: {
                                     showReloadUiCommand: {
@@ -896,7 +929,10 @@
                                   },
                                 },
                                 continuationCommand: {
-                                  token: await getct().news,
+                                  token: modifyPb.token(
+                                    await getToken(),
+                                    "news"
+                                  ),
                                   request: "CONTINUATION_REQUEST_TYPE_BROWSE",
                                   command: {
                                     showReloadUiCommand: {
@@ -927,7 +963,10 @@
                                   },
                                 },
                                 continuationCommand: {
-                                  token: await getct().live,
+                                  token: modifyPb.token(
+                                    await getToken(),
+                                    "live"
+                                  ),
                                   request: "CONTINUATION_REQUEST_TYPE_BROWSE",
                                   command: {
                                     showReloadUiCommand: {
@@ -958,7 +997,10 @@
                                   },
                                 },
                                 continuationCommand: {
-                                  token: await getct().sports,
+                                  token: modifyPb.token(
+                                    await getToken(),
+                                    "sports"
+                                  ),
                                   request: "CONTINUATION_REQUEST_TYPE_BROWSE",
                                   command: {
                                     showReloadUiCommand: {
@@ -1015,14 +1057,8 @@
                                 apiUrl: "/youtubei/v1/browse",
                               },
                             },
-                            commandMetadata: {
-                              webCommandMetadata: {
-                                sendPost: true,
-                                apiUrl: "/youtubei/v1/browse",
-                              },
-                            },
                             continuationCommand: {
-                              token: await getct().all,
+                              token: modifyPb.token(await getToken()),
                               request: "CONTINUATION_REQUEST_TYPE_BROWSE",
                             },
                           },
