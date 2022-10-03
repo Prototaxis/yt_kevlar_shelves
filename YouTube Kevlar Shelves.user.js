@@ -567,12 +567,12 @@
     tv: function ($str, $type) {
       let ct = $type.length;
       return generatePb({
-        72: btoa(
+        15: btoa(
           this.basef($str)
-            .replace(
-                /(.*)(?:\u00FA\u009C\u00C7\u00BD\u0009|\u008a\u0082\u00FA\u00DA\u0009).{1,2}\u0008.*/,
-                "$1\u00FA\u009C\u00C7\u00BD\u0009\u0002\u0008\u0000\u008a\u0082\u00FA\u00DA\u0009\u0002\u0008\u0000"
-            )
+            /*.replace(
+                /(.*)(?:\u00FA\u009C\u00C7\u00BD\u0009|\u008a\u0082\u00FA\u00DA\u0009).{1,2}\u0008.*///,
+                /*"$1\u00FA\u009C\u00C7\u00BD\u0009\u0002\u0008\u0000\u008a\u0082\u00FA\u00DA\u0009\u0002\u0008\u0000"
+            )*/
             .replace(/page_snapshot_token/g, "filtered_page_token")
             .replace(/\u000creload/g, "\u0013filtered_page")
             .replace(
@@ -718,7 +718,7 @@
     return await token;
   }
 
-  let getToken = cacheF(base_getToken);
+  var getToken = cacheF(base_getToken);
 
   async function getct() {
     return {
@@ -807,7 +807,7 @@
                               navigationEndpoint: {
                                 commandMetadata: {
                                   webCommandMetadata: {
-                                    url: '',
+                                    //url: '',
                                     sendPost: true,
                                     webPageType: "WEB_PAGE_TYPE_BROWSE",
                                     apiUrl: "/youtubei/v1/browse",
@@ -1084,6 +1084,12 @@
 
   document.addEventListener("yt-page-data-updated", async function (e) {
     if (e.detail.pageType == "home") {
+      document.addEventListener("yt-service-request-sent", async function (er) {
+          if (er.target.actionMap['yt-filter-chip-transform-command']) {
+              document.querySelector("[role='main']").data = {};
+              document.querySelector("[role='main']").data = await requestYoutubei("hpKevlar", modifyPb.tv(await getToken(),"music"));
+          }
+      })
       document.querySelector("[role='main']").data = {};
       document.querySelector("[role='main']").data = await skeleton;
       document.querySelector("[role='main']").data = await ctokenCommand();
