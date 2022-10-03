@@ -164,9 +164,9 @@
           return str == ""
             ? ""
             : str
-              .match(/.{2}/g)
-              .map((byte) => String.fromCharCode(parseInt(byte, 16)))
-              .join("");
+                .match(/.{2}/g)
+                .map((byte) => String.fromCharCode(parseInt(byte, 16)))
+                .join("");
         }
       }
 
@@ -523,38 +523,40 @@
 
   var modifyPb = {
     basef: function ($str) {
-    return atob(
-      atob(
-        atob($str.replace(/\_/g, "/").replace(/%3D/g, "").replace(/\-/g, "+"))
+      return atob(
+        atob(
+          atob($str.replace(/\_/g, "/").replace(/%3D/g, "").replace(/\-/g, "+"))
+            .match(
+              /\u00E2\u00A9\u0085\u00B2\u0002.*\u0012\u000FFEwhat_to_watch\u001A.{1,3}((?:C|w)[\w-%]+)(?:\u009a\u0002\u001abrowse-feedFEwhat_to_watch)?/
+            )[1]
+            .replace(/\-/g, "+")
+            .replace(/\_/g, "/")
+            .replace(/%3D/g, "")
+        )
           .match(
-            /\u00E2\u00A9\u0085\u00B2\u0002.*\u0012\u000FFEwhat_to_watch\u001A.{1,3}((?:C|w)[\w-%]+)(?:\u009a\u0002\u001abrowse-feedFEwhat_to_watch)?/
+            /(?:\u0008.{1})?.*(?:\u007a|\u00c2\u0004).{1,2}(G[\w-%]+)(?:\u00fa\u0006.*)?/
           )[1]
           .replace(/\-/g, "+")
           .replace(/\_/g, "/")
           .replace(/%3D/g, "")
       )
-        .match(
-          /(?:\u0008.{1})?.*(?:\u007a|\u00c2\u0004).{1,2}(G[\w-%]+)(?:\u00fa\u0006.*)?/
-        )[1]
-        .replace(/\-/g, "+")
-        .replace(/\_/g, "/")
-        .replace(/%3D/g, "")
-    )
-      .replace(
-        /(.*)(?:\u00FA\u009C\u00C7\u00BD\u0009|\u008a\u0082\u00FA\u00DA\u0009).{1,2}\u0008.*/,
-        "$1\u00DA\u00FA\u00CF\u0094\u000A\u0002\u0008\u0000"
-      )
-      .replace(
-        /2[\n|.][\u0008\u001a]?[\s\S]*(Z[\s\S]\u000a[\s\S]\u000a\u0019yt_page_snapshot_regional\u0012[\s\S]*)/,
-        "$1"
-      );
+        .replace(
+          /(.*)(?:\u00FA\u009C\u00C7\u00BD\u0009|\u008a\u0082\u00FA\u00DA\u0009).{1,2}\u0008.*/,
+          "$1\u00DA\u00FA\u00CF\u0094\u000A\u0002\u0008\u0000"
+        )
+        .replace(
+          /2[\n|.][\u0008\u001a]?[\s\S]*(Z[\s\S]\u000a[\s\S]\u000a\u0019yt_page_snapshot_regional\u0012[\s\S]*)/,
+          "$1"
+        );
     },
     home: function ($str, $client = 7) {
       return generatePb({
         15: btoa(
           this.basef($str).replace(
             /\u0000\u0001\u0000\u0001.\u0000\u0000\u0001\u0000\u0001\u0000\u0000\u0001\u0001/,
-            `\u0000\u0001\u0000\u0001${String.fromCodePoint($client)}\u0000\u0000\u0001\u0000\u0001\u0000\u0000\u0001\u0001`
+            `\u0000\u0001\u0000\u0001${String.fromCodePoint(
+              $client
+            )}\u0000\u0000\u0001\u0000\u0001\u0000\u0000\u0001\u0001`
           )
         )
           .replace(/\+/g, "-")
@@ -563,32 +565,32 @@
       });
     },
     tv: function ($str, $type) {
-    let ct = $type.length;
-    return generatePb({
-      72: btoa(
-        this.basef($str)
-          .replace(
-            /\u005a(.)\u000A(.)\u000A\u0019yt_page_snapshot_regional/,
-            (a, b, c) =>
-              `\u005a${String.fromCharCode(
-                b.charCodeAt(0) + ct + 5
-              )}\u000A${String.fromCharCode(
-                c.charCodeAt() + ct + 5
-              )}\u000A\u0024yt_page_snapshot_livingroom_regional`
-          )
-          .replace(
-            /\u001a(.)(.{15,18})FEwhat_to_watch\u0000\u0001\u0000\u0001.\u0000\u0000\u0001\u0000\u0001\u0000\u0000\u0001\u0001/,
-            (a, b, c) =>
-              `\u001a${String.fromCharCode(
-                b.charCodeAt() - 6 + ct
-              )}${c}FEtopics_${$type}\u0000\u0001\u0000\u0001\u0007\u0000\u0000\u0001\u0000\u0001\u0000\u0000\u0001\u0001`
-          )
-      )
-        .replace(/\+/g, "-")
-        .replace(/\//g, "_")
-        .replace(/=/g, ""),
-    });
-  },
+      let ct = $type.length;
+      return generatePb({
+        72: btoa(
+          this.basef($str)
+            .replace(
+              /\u005a(.)\u000A(.)\u000A\u0019yt_page_snapshot_regional/,
+              (a, b, c) =>
+                `\u005a${String.fromCharCode(
+                  b.charCodeAt(0) + ct + 5
+                )}\u000A${String.fromCharCode(
+                  c.charCodeAt() + ct + 5
+                )}\u000A\u0024yt_page_snapshot_livingroom_regional`
+            )
+            .replace(
+              /\u001a(.)(.{15,18})FEwhat_to_watch\u0000\u0001\u0000\u0001.\u0000\u0000\u0001\u0000\u0001\u0000\u0000\u0001\u0001/,
+              (a, b, c) =>
+                `\u001a${String.fromCharCode(
+                  b.charCodeAt() - 6 + ct
+                )}${c}FEtopics_${$type}\u0000\u0001\u0000\u0001\u0007\u0000\u0000\u0001\u0000\u0001\u0000\u0000\u0001\u0001`
+            )
+        )
+          .replace(/\+/g, "-")
+          .replace(/\//g, "_")
+          .replace(/=/g, ""),
+      });
+    },
     token: function ($str, $mode) {
       let m = typeof $mode == "number" ? "home" : "tv";
       return generatePb({
@@ -598,7 +600,7 @@
           35: "browse-feedFEwhat_to_watch",
         },
       });
-    }
+    },
   };
 
   var requestTypeObj = {
@@ -682,29 +684,45 @@
     return responseJson;
   }
 
-  async function getct() {
-    if (!ct) {
-    let response = await requestYoutubei("hpMatrix");
-    /*let token = await response.contents.singleColumnBrowseResultsRenderer.tabs[0]
+  function cacheF(fn) {
+    let cache = {};
+    return async function() {
+      if ('val' in cache) {
+        console.log('Fetching from cache');
+        return cache[n];
+      }
+      else {
+        console.log('Calculating result');
+        let result = await fn();
+        cache['val'] = await result;
+        return await result;
+      }
+    }
+  }
+
+  async function base_getct() {
+      let response = await requestYoutubei("hpMatrix");
+      /*let token = await response.contents.singleColumnBrowseResultsRenderer.tabs[0]
       .tabRenderer.content.sectionListRenderer.continuations[1]
       .reloadContinuationData.continuation;
       let ct = modifyPb.token(await token); // ios shelves*/
-    let token = await response.contents.tvBrowseRenderer.content.tvSecondaryNavRenderer
-      .sections[0].tvSecondaryNavSectionRenderer.tabs[0].tabRenderer.content
-      .tvSurfaceContentRenderer.content.sectionListRenderer.continuations[0]
-      .nextContinuationData.continuation;
-    let ct = {
+      let token = await response.contents.tvBrowseRenderer.content
+        .tvSecondaryNavRenderer.sections[0].tvSecondaryNavSectionRenderer
+        .tabs[0].tabRenderer.content.tvSurfaceContentRenderer.content
+        .sectionListRenderer.continuations[0].nextContinuationData.continuation;
+      return {
         all: modifyPb.token(await token),
-        music: modifyPb.tv(await token,"music"),
-        movies: modifyPb.tv(await token,"movies"),
-        gaming: modifyPb.tv(await token,"gaming"),
-        news: modifyPb.tv(await token,"news"),
-        live: modifyPb.tv(await token,"live"),
-        sports: modifyPb.tv(await token,"sports"),
-             }}
-    return ct;
+        music: modifyPb.tv(await token, "music"),
+        movies: modifyPb.tv(await token, "movies"),
+        gaming: modifyPb.tv(await token, "gaming"),
+        news: modifyPb.tv(await token, "news"),
+        live: modifyPb.tv(await token, "live"),
+        sports: modifyPb.tv(await token, "sports"),
+      }
   }
 
+  const getct = cacheF(base_getct);
+  
   var skeleton = {
     contents: {
       twoColumnBrowseResultsRenderer: {
@@ -737,7 +755,7 @@
   };
 
   async function ctokenCommand() {
-    return await ({
+    return {
       contents: {
         twoColumnBrowseResultsRenderer: {
           tabs: [
@@ -746,244 +764,246 @@
                 selected: true,
                 content: {
                   richGridRenderer: {
-                                  "header": {
-    "feedFilterChipBarRenderer": {
-      "contents": [
-        {
-          "chipCloudChipRenderer": {
-            "style": {
-              "styleType": "STYLE_HOME_FILTER"
-            },
-            "text": {
-              "runs": [
-                {
-                  "text": "All"
-                }
-              ]
-            },
-            "isSelected": true
-          }
-        },
-        {
-          "chipCloudChipRenderer": {
-            "style": {
-              "styleType": "STYLE_HOME_FILTER"
-            },
-            "text": {
-              "runs": [
-                {
-                  "text": "Music"
-                }
-              ]
-            },
-            "navigationEndpoint": {
-              "commandMetadata": {
-                "webCommandMetadata": {
-                  "sendPost": true,
-                  "apiUrl": "/youtubei/v1/browse"
-                }
-              },
-              "continuationCommand": {
-                "token": await getct().music,
-                "request": "CONTINUATION_REQUEST_TYPE_BROWSE",
-                "command": {
-                  "showReloadUiCommand": {
-                    "targetId": "browse-feedFEwhat_to_watch"
-                  }
-                }
-              }
-            },
-            "targetId": "feed_filter_chip_bar_second_chip"
-          }
-        },
-        {
-          "chipCloudChipRenderer": {
-            "style": {
-              "styleType": "STYLE_HOME_FILTER"
-            },
-            "text": {
-              "runs": [
-                {
-                  "text": "Movies"
-                }
-              ]
-            },
-            "navigationEndpoint": {
-              "commandMetadata": {
-                "webCommandMetadata": {
-                  "sendPost": true,
-                  "apiUrl": "/youtubei/v1/browse"
-                }
-              },
-              "continuationCommand": {
-                "token": await getct().movies,
-                "request": "CONTINUATION_REQUEST_TYPE_BROWSE",
-                "command": {
-                  "showReloadUiCommand": {
-                    "targetId": "browse-feedFEwhat_to_watch"
-                  }
-                }
-              }
-            }
-          }
-        },
-        {
-            "chipCloudChipRenderer": {
-              "style": {
-                "styleType": "STYLE_HOME_FILTER"
-              },
-              "text": {
-                "runs": [
-                  {
-                    "text": "Gaming"
-                  }
-                ]
-              },
-              "navigationEndpoint": {
-                "commandMetadata": {
-                  "webCommandMetadata": {
-                    "sendPost": true,
-                    "apiUrl": "/youtubei/v1/browse"
-                  }
-                },
-                "continuationCommand": {
-                  "token": await getct().gaming,
-                  "request": "CONTINUATION_REQUEST_TYPE_BROWSE",
-                  "command": {
-                    "showReloadUiCommand": {
-                      "targetId": "browse-feedFEwhat_to_watch"
-                    }
-                  }
-                }
-              }
-            }
-        },
-        {
-            "chipCloudChipRenderer": {
-              "style": {
-                "styleType": "STYLE_HOME_FILTER"
-              },
-              "text": {
-                "runs": [
-                  {
-                    "text": "News"
-                  }
-                ]
-              },
-              "navigationEndpoint": {
-                "commandMetadata": {
-                  "webCommandMetadata": {
-                    "sendPost": true,
-                    "apiUrl": "/youtubei/v1/browse"
-                  }
-                },
-                "continuationCommand": {
-                  "token":  await getct().news,
-                  "request": "CONTINUATION_REQUEST_TYPE_BROWSE",
-                  "command": {
-                    "showReloadUiCommand": {
-                      "targetId": "browse-feedFEwhat_to_watch"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          { "chipCloudChipRenderer": {
-              "style": {
-                "styleType": "STYLE_HOME_FILTER"
-              },
-              "text": {
-                "runs": [
-                  {
-                    "text": "Live"
-                  }
-                ]
-              },
-              "navigationEndpoint": {
-                "commandMetadata": {
-                  "webCommandMetadata": {
-                    "sendPost": true,
-                    "apiUrl": "/youtubei/v1/browse"
-                  }
-                },
-                "continuationCommand": {
-                  "token": await getct().live,
-                  "request": "CONTINUATION_REQUEST_TYPE_BROWSE",
-                  "command": {
-                    "showReloadUiCommand": {
-                      "targetId": "browse-feedFEwhat_to_watch"
-                    }
-                  }
-                }
-              }
-            }
-        },
-        { "chipCloudChipRenderer": {
-              "style": {
-                "styleType": "STYLE_HOME_FILTER"
-              },
-              "text": {
-                "runs": [
-                  {
-                    "text": "Sports"
-                  }
-                ]
-              },
-              "navigationEndpoint": {
-                "commandMetadata": {
-                  "webCommandMetadata": {
-                    "sendPost": true,
-                    "apiUrl": "/youtubei/v1/browse"
-                  }
-                },
-                "continuationCommand": {
-                  "token": await getct().sports,
-                  "request": "CONTINUATION_REQUEST_TYPE_BROWSE",
-                  "command": {
-                    "showReloadUiCommand": {
-                      "targetId": "browse-feedFEwhat_to_watch"
-                    }
-                  }
-                }
-              }
-            }
-        }
-      ],
-      "nextButton": {
-        "buttonRenderer": {
-          "style": "STYLE_DEFAULT",
-          "size": "SIZE_DEFAULT",
-          "isDisabled": false,
-          "icon": {
-            "iconType": "CHEVRON_RIGHT"
-          },
-          "tooltip": "Next",
-          "accessibilityData": {
-            "accessibilityData": {
-              "label": "Next"
-            }
-          }
-        }
-      },
-      "previousButton": {
-        "buttonRenderer": {
-          "style": "STYLE_DEFAULT",
-          "size": "SIZE_DEFAULT",
-          "isDisabled": false,
-          "icon": {
-            "iconType": "CHEVRON_LEFT"
-          },
-          "tooltip": "Previous",
-          "accessibilityData": {
-            "accessibilityData": {
-              "label": "Previous"
-            }
-          }
-        }
-      }
-    }
-  },
+                    header: {
+                      feedFilterChipBarRenderer: {
+                        contents: [
+                          {
+                            chipCloudChipRenderer: {
+                              style: {
+                                styleType: "STYLE_HOME_FILTER",
+                              },
+                              text: {
+                                runs: [
+                                  {
+                                    text: "All",
+                                  },
+                                ],
+                              },
+                              isSelected: true,
+                            },
+                          },
+                          {
+                            chipCloudChipRenderer: {
+                              style: {
+                                styleType: "STYLE_HOME_FILTER",
+                              },
+                              text: {
+                                runs: [
+                                  {
+                                    text: "Music",
+                                  },
+                                ],
+                              },
+                              navigationEndpoint: {
+                                commandMetadata: {
+                                  webCommandMetadata: {
+                                    sendPost: true,
+                                    apiUrl: "/youtubei/v1/browse",
+                                  },
+                                },
+                                continuationCommand: {
+                                  token: await getct().music,
+                                  request: "CONTINUATION_REQUEST_TYPE_BROWSE",
+                                  command: {
+                                    showReloadUiCommand: {
+                                      targetId: "browse-feedFEwhat_to_watch",
+                                    },
+                                  },
+                                },
+                              },
+                              targetId: "feed_filter_chip_bar_second_chip",
+                            },
+                          },
+                          {
+                            chipCloudChipRenderer: {
+                              style: {
+                                styleType: "STYLE_HOME_FILTER",
+                              },
+                              text: {
+                                runs: [
+                                  {
+                                    text: "Movies",
+                                  },
+                                ],
+                              },
+                              navigationEndpoint: {
+                                commandMetadata: {
+                                  webCommandMetadata: {
+                                    sendPost: true,
+                                    apiUrl: "/youtubei/v1/browse",
+                                  },
+                                },
+                                continuationCommand: {
+                                  token: await getct().movies,
+                                  request: "CONTINUATION_REQUEST_TYPE_BROWSE",
+                                  command: {
+                                    showReloadUiCommand: {
+                                      targetId: "browse-feedFEwhat_to_watch",
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                          },
+                          {
+                            chipCloudChipRenderer: {
+                              style: {
+                                styleType: "STYLE_HOME_FILTER",
+                              },
+                              text: {
+                                runs: [
+                                  {
+                                    text: "Gaming",
+                                  },
+                                ],
+                              },
+                              navigationEndpoint: {
+                                commandMetadata: {
+                                  webCommandMetadata: {
+                                    sendPost: true,
+                                    apiUrl: "/youtubei/v1/browse",
+                                  },
+                                },
+                                continuationCommand: {
+                                  token: await getct().gaming,
+                                  request: "CONTINUATION_REQUEST_TYPE_BROWSE",
+                                  command: {
+                                    showReloadUiCommand: {
+                                      targetId: "browse-feedFEwhat_to_watch",
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                          },
+                          {
+                            chipCloudChipRenderer: {
+                              style: {
+                                styleType: "STYLE_HOME_FILTER",
+                              },
+                              text: {
+                                runs: [
+                                  {
+                                    text: "News",
+                                  },
+                                ],
+                              },
+                              navigationEndpoint: {
+                                commandMetadata: {
+                                  webCommandMetadata: {
+                                    sendPost: true,
+                                    apiUrl: "/youtubei/v1/browse",
+                                  },
+                                },
+                                continuationCommand: {
+                                  token: await getct().news,
+                                  request: "CONTINUATION_REQUEST_TYPE_BROWSE",
+                                  command: {
+                                    showReloadUiCommand: {
+                                      targetId: "browse-feedFEwhat_to_watch",
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                          },
+                          {
+                            chipCloudChipRenderer: {
+                              style: {
+                                styleType: "STYLE_HOME_FILTER",
+                              },
+                              text: {
+                                runs: [
+                                  {
+                                    text: "Live",
+                                  },
+                                ],
+                              },
+                              navigationEndpoint: {
+                                commandMetadata: {
+                                  webCommandMetadata: {
+                                    sendPost: true,
+                                    apiUrl: "/youtubei/v1/browse",
+                                  },
+                                },
+                                continuationCommand: {
+                                  token: await getct().live,
+                                  request: "CONTINUATION_REQUEST_TYPE_BROWSE",
+                                  command: {
+                                    showReloadUiCommand: {
+                                      targetId: "browse-feedFEwhat_to_watch",
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                          },
+                          {
+                            chipCloudChipRenderer: {
+                              style: {
+                                styleType: "STYLE_HOME_FILTER",
+                              },
+                              text: {
+                                runs: [
+                                  {
+                                    text: "Sports",
+                                  },
+                                ],
+                              },
+                              navigationEndpoint: {
+                                commandMetadata: {
+                                  webCommandMetadata: {
+                                    sendPost: true,
+                                    apiUrl: "/youtubei/v1/browse",
+                                  },
+                                },
+                                continuationCommand: {
+                                  token: await getct().sports,
+                                  request: "CONTINUATION_REQUEST_TYPE_BROWSE",
+                                  command: {
+                                    showReloadUiCommand: {
+                                      targetId: "browse-feedFEwhat_to_watch",
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        ],
+                        nextButton: {
+                          buttonRenderer: {
+                            style: "STYLE_DEFAULT",
+                            size: "SIZE_DEFAULT",
+                            isDisabled: false,
+                            icon: {
+                              iconType: "CHEVRON_RIGHT",
+                            },
+                            tooltip: "Next",
+                            accessibilityData: {
+                              accessibilityData: {
+                                label: "Next",
+                              },
+                            },
+                          },
+                        },
+                        previousButton: {
+                          buttonRenderer: {
+                            style: "STYLE_DEFAULT",
+                            size: "SIZE_DEFAULT",
+                            isDisabled: false,
+                            icon: {
+                              iconType: "CHEVRON_LEFT",
+                            },
+                            tooltip: "Previous",
+                            accessibilityData: {
+                              accessibilityData: {
+                                label: "Previous",
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
                     contents: [
                       {
                         continuationItemRenderer: {
@@ -1023,7 +1043,7 @@
           ],
         },
       },
-    })
+    };
   }
 
   document.addEventListener("yt-page-data-updated", async function (e) {
@@ -1032,5 +1052,5 @@
       document.querySelector("[role='main']").data = await skeleton;
       document.querySelector("[role='main']").data = await ctokenCommand();
     }
-  })
-})()
+  });
+})();
