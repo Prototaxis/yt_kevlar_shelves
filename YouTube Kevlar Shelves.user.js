@@ -1,6 +1,8 @@
 // ==UserScript==
 // @name         YouTube Kevlar Shelves v0.3
 // @namespace    http://tampermonkey.net/
+// @updateURL    https://github.com/Prototaxis/yt_kevlar_shelves/raw/tv_chips/YouTube%20Kevlar%20Shelves.user.js
+// @downloadURL  https://github.com/Prototaxis/yt_kevlar_shelves/raw/tv_chips/YouTube%20Kevlar%20Shelves.user.js
 // @version      0.3.9
 // @description  This userscript restores YouTube homepage shelves
 // @author       Prototaxis
