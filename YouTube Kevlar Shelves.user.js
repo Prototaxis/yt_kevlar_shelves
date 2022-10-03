@@ -592,7 +592,7 @@
       });
     },
     token: function ($str, $mode) {
-      let m = typeof $mode == "number" ? "home" : "tv";
+      let m = (typeof $mode == "number" ? "home" : "tv");
       return generatePb({
         80226972: {
           2: "FEwhat_to_watch",
@@ -689,7 +689,7 @@
     return async function() {
       if ('val' in cache) {
         console.log('Fetching from cache');
-        return cache[n];
+        return cache['val'];
       }
       else {
         console.log('Calculating result');
