@@ -2275,7 +2275,6 @@
                 }
             })
         });
-        console.log(finalConti);
         return finalConti;
     }
 
