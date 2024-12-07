@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         YouTube Kevlar Music Shelves
 // @namespace    http://tampermonkey.net/
-// @updateURL    https://github.com/Prototaxis/yt_kevlar_shelves/raw/master/YouTube%20Kevlar%20Shelves.user.js
-// @downloadURL  https://github.com/Prototaxis/yt_kevlar_shelves/raw/master/YouTube%20Kevlar%20Shelves.user.js
+// @updateURL    https://github.com/Prototaxis/yt_kevlar_shelves/raw/refs/heads/topics_music/YouTube%20Kevlar%20Shelves.user.js
+// @downloadURL  https://github.com/Prototaxis/yt_kevlar_shelves/raw/refs/heads/topics_music/YouTube%20Kevlar%20Shelves.user.js
 // @version      0.6.1.fe.topics_music
 // @description  This userscript restores YouTube homepage shelves
 // @author       Prototaxis
