@@ -3,7 +3,7 @@
 // @namespace    http://tampermonkey.net/
 // @updateURL    https://github.com/Prototaxis/yt_kevlar_shelves/raw/master/YouTube%20Kevlar%20Shelves.user.js
 // @downloadURL  https://github.com/Prototaxis/yt_kevlar_shelves/raw/master/YouTube%20Kevlar%20Shelves.user.js
-// @version      0.5.1
+// @version      0.6.0
 // @description  This userscript restores YouTube homepage shelves
 // @author       Prototaxis
 // @match        *://*.youtube.com/*
@@ -2247,7 +2247,7 @@
     })(this);
 
     function modifyPb(conti, clientId) {
-        if (typeof clientName == "undefined") clientId = 5;
+        if (typeof clientId == "undefined") clientId = 5;
         var webv1Conti = decodePb(conti)[80226972][3].nestedPb[15].nestedPb;
         var userKey = webv1Conti[11][1][2];
         var deepLayer = webv1Conti[11][1][3];
@@ -2279,12 +2279,23 @@
     }
 
     var requestTypeObj = {
-        hpMatrix: {
+        /*hpMatrix: {
             auth: true,
             link: "browse",
             client: {
                 clientName: "5",
                 clientVersion: "18.02",
+            },
+            params: {
+                browseId: "FEwhat_to_watch",
+            },
+        },*/
+        hpMatrix: {
+            auth: true,
+            link: "browse",
+            client: {
+                clientName: "7",
+                clientVersion: "7." + (new Date).toISOString().replace(/-/g, "").slice(0, 8),
             },
             params: {
                 browseId: "FEwhat_to_watch",
@@ -2341,9 +2352,10 @@
     async function requestYoutubei($requestType, $bp = "") {
         var ot = requestTypeObj[$requestType];
         let url =
-            "https://www.youtube.com/youtubei/v1/" +
-            ot.link +
-            "?key=AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8&prettyPrint=false";
+            "https://www.youtube.com/youtubei/v1/"
+            + ot.link
+            //+ "?key=AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8"
+            + "?prettyPrint=false";
         requestBodyBase.context.client = {
             ...requestBodyBase.context.client,
             ...ot.client,
@@ -2361,10 +2373,12 @@
 
     async function getct() {
         let response = await requestYoutubei("hpMatrix");
-        let token = await response.contents.singleColumnBrowseResultsRenderer.tabs[0]
+        /*let token = await response.contents.singleColumnBrowseResultsRenderer.tabs[0]
             .tabRenderer.content.sectionListRenderer.continuations[0]
-            .nextContinuationData.continuation;
-        let ct = modifyPb(await token);
+            .nextContinuationData.continuation;*/
+        let token = await response.contents.tvBrowseRenderer.content.tvSurfaceContentRenderer
+            .content.sectionListRenderer.continuations[0].nextContinuationData.continuation;
+        let ct = modifyPb(await token, 7);
         return ct;
     }
 
