@@ -1,9 +1,9 @@
 // ==UserScript==
-// @name         YouTube Kevlar Shelves
+// @name         YouTube Kevlar Music Shelves
 // @namespace    http://tampermonkey.net/
 // @updateURL    https://github.com/Prototaxis/yt_kevlar_shelves/raw/master/YouTube%20Kevlar%20Shelves.user.js
 // @downloadURL  https://github.com/Prototaxis/yt_kevlar_shelves/raw/master/YouTube%20Kevlar%20Shelves.user.js
-// @version      0.6.0
+// @version      0.6.1.fe.topics_music
 // @description  This userscript restores YouTube homepage shelves
 // @author       Prototaxis
 // @match        *://*.youtube.com/*
@@ -2251,30 +2251,35 @@
         var webv1Conti = decodePb(conti)[80226972][3].nestedPb[15].nestedPb;
         var userKey = webv1Conti[11][1][2];
         var deepLayer = webv1Conti[11][1][3];
-        deepLayer = deepLayer.replace(/FEwhat_to_watch\u0000\u0001\u0001./, "FEwhat_to_watch\u0000\u0001\u0001" + String.fromCharCode(clientId));
+        deepLayer = deepLayer.replace(/FEtopics_music\u0000\u0001\u0001./, "FEtopics_music\u0000\u0001\u0001" + String.fromCharCode(clientId));
         var snapshotToken = webv1Conti[12];
+        var layer15 = {
+            11: {
+                1: {
+                    1: "yt_page_snapshot_livingroom_regional",
+                    2: userKey,
+                    3: deepLayer
+                }
+            },
+            318126543: {
+                1: 0
+            }
+        };
+        
+        if (snapshotToken) {
         snapshotToken[3][1] = Uint64(snapshotToken[3][1]);
         snapshotToken[3][2] = Fixed32(snapshotToken[3][2]);
         snapshotToken[3][3] = Fixed32(snapshotToken[3][3]);
         snapshotToken[4][1] = Uint64(snapshotToken[4][1]);
         snapshotToken[4][2] = Fixed32(snapshotToken[4][2]);
         snapshotToken[4][3] = Fixed32(snapshotToken[4][3]);
+        layer15[12] = snapshotToken;
+        }
 
         var finalConti = generatePb({
-            15: generatePb({
-                11: {
-                    1: {
-                        1: "yt_page_snapshot_regional",
-                        2: userKey,
-                        3: deepLayer
-                    }
-                },
-                12: snapshotToken,
-                318126543: {
-                    1: 0
-                }
-            })
+            15: generatePb(layer15)
         });
+
         return finalConti;
     }
 
@@ -2298,7 +2303,7 @@
                 clientVersion: "7." + (new Date).toISOString().replace(/-/g, "").slice(0, 8),
             },
             params: {
-                browseId: "FEwhat_to_watch",
+                browseId: "FEtopics_music",
             },
         },
         hpKevlar: {
